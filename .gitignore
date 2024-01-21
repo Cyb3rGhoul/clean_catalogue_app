@@ -1,0 +1,72 @@
+# Flutter/Dart specific files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.idea/
+.vscode/
+*.iml
+*.log
+
+# Flutter build artifacts
+build/
+ios/Flutter/App.framework/
+ios/Flutter/Flutter.framework/
+ios/Flutter/flutter_export_environment.sh
+web/flutter_service_worker.js
+web/assets/
+
+# Firebase configuration files
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Dependency lock files
+pubspec.lock
+yarn.lock
+
+# Flutter analysis
+**/analysis_options.yaml
+
+# Android build
+android/build/
+android/app/build/
+
+# iOS build
+ios/Pods/
+ios/Flutter/App.framework/
+ios/Flutter/Flutter.framework/
+ios/Flutter/flutter_export_environment.sh
+
+# Generated files
+lib/generated/
+
+# macOS specific
+.DS_Store
+
+# Gradle files
+**/gradle-wrapper.jar
+**/.gradle
+**/gradle
+**/local.properties
+**/gradlew
+
+# IntelliJ IDEA
+**/*.iml
+**/.idea/
+
+# Visual Studio Code
+.vscode/
+.code-workspace
+
+# macOS metadata
+*.DS_Store
+
+# Android Gradle plugin
+gradle.properties
+
+# Flutter Gallery app artifacts
+example/android/app/debug.keystore
+example/ios/Runner/GeneratedPluginRegistrant.*
+
+# Keystore files
+*.jks
