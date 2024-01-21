@@ -1,4 +1,4 @@
-# gather_app
+# clean_catalogue_app
 
 A new Flutter project.
 
