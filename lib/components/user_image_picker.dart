@@ -35,7 +35,18 @@ class _UserImagePickerState extends State<UserImagePicker> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: _pickImage,
-      child: const Text('Upload catalogue'),
+      style: ElevatedButton.styleFrom(
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: const Text(
+        'Upload catalogue',
+        style: TextStyle(
+          color: Colors.black,
+        ),
+      ),
     );
   }
 }
