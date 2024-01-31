@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:clean_catalogue_app/models/catalogue_model.dart';
 
-Future<void> uploadToCloudinary(XFile image, List<String> uploadedUrls) async {
+Future<void> uploadToCloudinary(
+    XFile image, List<ImageObject> uploadedUrls) async {
   await dotenv.load(fileName: ".env");
 
   try {
@@ -22,8 +24,11 @@ Future<void> uploadToCloudinary(XFile image, List<String> uploadedUrls) async {
       final responseString = String.fromCharCodes(responseData);
       final jsonMap = jsonDecode(responseString);
 
-      uploadedUrls.add(jsonMap['url']);
-      debugPrint("Added URL: ${uploadedUrls.last}");
+      ImageObject imageObject = ImageObject(
+          name: jsonMap['original_filename'], imageUrl: jsonMap['url']);
+
+      uploadedUrls.add(imageObject);
+      debugPrint("Added URL: ${uploadedUrls.last.imageUrl}");
     }
   } catch (error) {
     debugPrint(error.toString());

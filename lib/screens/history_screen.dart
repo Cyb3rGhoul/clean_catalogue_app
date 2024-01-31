@@ -5,6 +5,7 @@ import 'package:clean_catalogue_app/models/user_model.dart';
 import 'package:clean_catalogue_app/screens/scan_screen.dart';
 import 'package:clean_catalogue_app/screens/landing_screen.dart';
 import 'package:clean_catalogue_app/components/main_drawer.dart';
+import 'package:clean_catalogue_app/components/scan_list_item.dart';
 
 class HistoryScreen extends StatefulWidget {
   final UserModel currUser;
@@ -61,8 +62,154 @@ class _HistoryScreenState extends State<HistoryScreen> {
         currUser: widget.currUser,
         onSelectScreen: _setScreen,
       ),
-      body: const Center(
-        child: Text("History..."),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(34, 25, 34, 0),
+              decoration: ShapeDecoration(
+                color: const Color(0xFF2F66D0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: SizedBox(
+                      width: 182,
+                      height: 35,
+                      child: Container(
+                        decoration: ShapeDecoration(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'User Dashboard',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 22,
+                            fontFamily: 'Judson',
+                            fontWeight: FontWeight.w400,
+                            height: 0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 45, 10, 10),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 25, 14, 25),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Name"),
+                                Text("Email Id:"),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(widget.currUser.username),
+                                Text(widget.currUser.email),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(28, 20, 28, 40),
+              decoration: ShapeDecoration(
+                color: const Color(0xFF2F66D0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: SizedBox(
+                      width: 88,
+                      height: 37,
+                      child: Container(
+                        decoration: ShapeDecoration(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10),
+                            ),
+                          ),
+                        ),
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'History',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 22,
+                            fontFamily: 'Judson',
+                            fontWeight: FontWeight.w400,
+                            height: 0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 47, 10, 10),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                        child: widget.currUser.catalogues != null &&
+                                widget.currUser.catalogues!.isNotEmpty
+                            ? ListView.builder(
+                                itemCount: widget.currUser.catalogues!.length,
+                                itemBuilder: (context, index) {
+                                  return ScanListItem(
+                                    currUser: widget.currUser,
+                                    catalogue: widget.currUser.catalogues![
+                                        widget.currUser.catalogues!.length -
+                                            index -
+                                            1],
+                                  );
+                                },
+                              )
+                            : const Center(
+                                child: Text(
+                                  "No catalogues yet, start scanning.",
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

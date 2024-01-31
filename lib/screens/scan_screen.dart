@@ -8,8 +8,11 @@ import 'package:clean_catalogue_app/components/main_drawer.dart';
 import 'package:clean_catalogue_app/models/catalogue_model.dart';
 import 'package:clean_catalogue_app/screens/history_screen.dart';
 import 'package:clean_catalogue_app/screens/landing_screen.dart';
+import 'package:clean_catalogue_app/services/backend_service.dart';
 import 'package:clean_catalogue_app/services/cloudinary_service.dart';
 import 'package:clean_catalogue_app/components/user_image_picker.dart';
+import 'package:clean_catalogue_app/models/catalogue_scores_model.dart';
+import 'package:clean_catalogue_app/screens/catalogue_detail_screen.dart';
 
 var uuid = const Uuid();
 
@@ -69,22 +72,39 @@ class _ScanScreenState extends State<ScanScreen> {
 
     _form.currentState!.save();
 
-    final List<String> uploadedUrls = [];
+    final List<ImageObject> uploadedUrls = [];
 
     if (images.isEmpty) {
       _setIsUploading();
       return;
     }
 
-    for (final XFile image in images) {
-      await uploadToCloudinary(image, uploadedUrls);
+    CatalogueScores? scores;
+
+    try {
+      for (final XFile image in images) {
+        await uploadToCloudinary(image, uploadedUrls);
+      }
+
+      scores = await scanCatalogue(
+          images: uploadedUrls,
+          catalogueName: _enteredName,
+          catalogueDescription: _enteredDescription,
+          currUser: widget.currUser);
+    } catch (error) {
+      _setIsUploading();
+      debugPrint(error.toString());
+      _showSnackBar(message: "An error occured.");
+      return;
     }
 
     final Catalogue catalogue = Catalogue(
       catalogueID: _getRandomUID(),
       name: _enteredName,
-      imageUrls: uploadedUrls,
+      images: uploadedUrls,
+      date: DateTime.now(),
       description: _enteredDescription,
+      result: scores!,
     );
 
     if (widget.currUser.catalogues == null) {
@@ -96,18 +116,16 @@ class _ScanScreenState extends State<ScanScreen> {
     _form.currentState!.reset();
     _showSnackBar(message: "Catalogue Uploaded.");
     _setIsUploading();
+    _navigateToCatalogueDetailScreen(catalogue: catalogue);
+  }
 
-    // debugPrint(widget.currUser.email);
-    // debugPrint(widget.currUser.username);
-    // debugPrint(widget.currUser.userID);
-    // debugPrint(widget.currUser.catalogues?[0].description);
-    // debugPrint(widget.currUser.catalogues?[0].name);
-    // debugPrint(widget.currUser.catalogues?[1].description ?? '');
-    // debugPrint(widget.currUser.catalogues?[1].name ?? '');
-    // debugPrint(widget.currUser.catalogues?[2].description ?? '');
-    // debugPrint(widget.currUser.catalogues?[2].name ?? '');
-    // debugPrint(widget.currUser.catalogues?[0].description ?? '');
-    // debugPrint(widget.currUser.catalogues?[0].imageUrls[0]);
+  void _navigateToCatalogueDetailScreen({required Catalogue catalogue}) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => CatalogueDetailScreen(
+            catalogue: catalogue, currUser: widget.currUser),
+      ),
+    );
   }
 
   void _navigateToLandingScreen() {
@@ -157,168 +175,146 @@ class _ScanScreenState extends State<ScanScreen> {
         currUser: widget.currUser,
         onSelectScreen: _setScreen,
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 375),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                decoration: ShapeDecoration(
-                  color: const Color(0xFF8AAAE5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(28, 20, 28, 0),
+              decoration: ShapeDecoration(
+                color: const Color(0xFF2F66D0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: SizedBox(
-                  height: 180,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      !_isUploading
-                          ? UserImagePicker(onPickImage: _uploadImages)
-                          : const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(),
-                                SizedBox(
-                                  height: 18,
-                                ),
-                                Text(
-                                  "Uploading...",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                  ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  !_isUploading
+                      ? UserImagePicker(onPickImage: _uploadImages)
+                      : CircularProgressIndicator()
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(28, 20, 28, 40),
+              decoration: ShapeDecoration(
+                color: const Color(0xFF2F66D0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 50, 14, 30),
+                    child: Form(
+                      key: _form,
+                      child: Column(
+                        children: [
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Name of the Catalogue',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontFamily: 'Kanit',
+                                fontWeight: FontWeight.bold,
+                                height: 0,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 3,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
                               ],
-                            )
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 35,
-              ),
-              Container(
-                decoration: ShapeDecoration(
-                  color: const Color(0xFF8AAAE5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                child: SizedBox(
-                  height: 470,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 50, 14, 30),
-                        child: Form(
-                          key: _form,
-                          child: Column(
-                            children: [
-                              const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Name of the Catalogue',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.bold,
-                                    height: 0,
+                            ),
+                            child: TextFormField(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(15),
                                   ),
                                 ),
+                                fillColor: Colors.white,
+                                filled: true,
                               ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 3,
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(15),
-                                      ),
-                                    ),
-                                    fillColor: Colors.white,
-                                    filled: true,
-                                  ),
-                                  enableSuggestions: false,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter at least 4 characters.';
-                                    }
-                                    return null;
-                                  },
-                                  onSaved: (value) {
-                                    _enteredName = value!;
-                                  },
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Description',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                    fontFamily: 'Kanit',
-                                    fontWeight: FontWeight.bold,
-                                    height: 0,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Expanded(
-                                child: Card(
-                                  elevation: 7,
-                                  child: TextFormField(
-                                    textAlignVertical: TextAlignVertical.top,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(15),
-                                        ),
-                                      ),
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                    ),
-                                    expands: true,
-                                    maxLines: null,
-                                    onSaved: (value) {
-                                      _enteredDescription = value!;
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ],
+                              enableSuggestions: false,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter at least 4 characters.';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredName = value!;
+                              },
+                            ),
                           ),
-                        ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Description',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontFamily: 'Kanit',
+                                fontWeight: FontWeight.bold,
+                                height: 0,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Expanded(
+                            child: Card(
+                              elevation: 7,
+                              child: TextFormField(
+                                textAlignVertical: TextAlignVertical.top,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(15),
+                                    ),
+                                  ),
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                ),
+                                expands: true,
+                                maxLines: null,
+                                onSaved: (value) {
+                                  _enteredDescription = value!;
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

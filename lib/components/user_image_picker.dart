@@ -28,6 +28,12 @@ class _UserImagePickerState extends State<UserImagePicker> {
       _pickedImages = pickedImage;
     });
 
+    final originalImageNames =
+        _pickedImages!.map((image) => image.name).toList();
+
+    // Use the original names as needed, for example:
+    debugPrint(originalImageNames.toString());
+
     widget.onPickImage(_pickedImages!);
   }
 

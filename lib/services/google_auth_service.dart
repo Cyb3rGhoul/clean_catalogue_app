@@ -1,16 +1,20 @@
-import 'package:clean_catalogue_app/models/user_model.dart';
-import 'package:clean_catalogue_app/services/backend_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:clean_catalogue_app/models/user_model.dart';
+import 'package:clean_catalogue_app/services/backend_service.dart';
 
 Future<UserModel?> signInWithGoogle() async {
   UserModel? currUser;
 
   try {
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+    if (gUser == null) {
+      debugPrint("NOIIIII");
+      return null;
+    }
 
-    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+    final GoogleSignInAuthentication gAuth = await gUser.authentication;
 
     final credential = GoogleAuthProvider.credential(
       accessToken: gAuth.accessToken,
@@ -28,8 +32,7 @@ Future<UserModel?> signInWithGoogle() async {
 
     return currUser;
   } catch (error) {
-    debugPrint(error.toString());
+    debugPrint("Printing 69${error.toString()}");
+    throw Error();
   }
-
-  return null;
 }

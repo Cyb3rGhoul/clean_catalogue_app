@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:clean_catalogue_app/signup_image.dart';
 import 'package:clean_catalogue_app/models/user_model.dart';
 import 'package:clean_catalogue_app/screens/scan_screen.dart';
-import 'package:clean_catalogue_app/components/google_signin_button.dart';
 import 'package:clean_catalogue_app/services/google_auth_service.dart';
+import 'package:clean_catalogue_app/components/google_signin_button.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
