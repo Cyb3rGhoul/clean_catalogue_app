@@ -49,7 +49,7 @@ class _AuthScreenState extends State<AuthScreen> {
       _setIsAuthenticating();
       currUser = await signInWithGoogle();
     } catch (error) {
-      _showSnackBar(message: error.toString());
+      _showSnackBar(message: "An error occured, please try again later.");
     } finally {
       _setIsAuthenticating();
       if (currUser != null) _navigateToScanScreen(currUser);

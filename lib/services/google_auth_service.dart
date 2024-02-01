@@ -32,6 +32,8 @@ Future<UserModel?> signInWithGoogle() async {
 
     return currUser;
   } catch (error) {
+    await FirebaseAuth.instance.signOut();
+    await GoogleSignIn().signOut();
     debugPrint("Printing 69${error.toString()}");
     throw Error();
   }

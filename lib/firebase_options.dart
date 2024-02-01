@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBhXLt-wCd9ozR5lK1K7mvBnIYwuipnry4',
-    appId: '1:899539362961:android:cea4aa8bcfd96d5d678b30',
+    appId: '1:899539362961:android:d5ed1c9513bd14da678b30',
     messagingSenderId: '899539362961',
     projectId: 'clean-catalogue-app-b0ca5',
     storageBucket: 'clean-catalogue-app-b0ca5.appspot.com',
@@ -59,10 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDUeax_LHp_EIQWOdLYMfNVkYEIYKkZRC8',
-    appId: '1:899539362961:ios:8e91347a0bdfebfc678b30',
+    appId: '1:899539362961:ios:e241b69306d2fcc7678b30',
     messagingSenderId: '899539362961',
     projectId: 'clean-catalogue-app-b0ca5',
     storageBucket: 'clean-catalogue-app-b0ca5.appspot.com',
-    iosBundleId: 'com.example.gatherApp',
+    androidClientId: '899539362961-2k37hptb71bv70163i20b3pomjl8uqo7.apps.googleusercontent.com',
+    iosClientId: '899539362961-ndn4q8ink826hl842mrh8guduneao16t.apps.googleusercontent.com',
+    iosBundleId: 'com.example.cleanCatalogueApp',
   );
 }
