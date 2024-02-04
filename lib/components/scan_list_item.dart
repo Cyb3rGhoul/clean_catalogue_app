@@ -1,16 +1,13 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_catalogue_app/signup_image.dart';
-import 'package:clean_catalogue_app/models/user_model.dart';
 import 'package:clean_catalogue_app/models/catalogue_model.dart';
 import 'package:clean_catalogue_app/screens/catalogue_detail_screen.dart';
 
 class ScanListItem extends StatelessWidget {
-  const ScanListItem(
-      {required this.currUser, required this.catalogue, super.key});
+  const ScanListItem({required this.catalogue, super.key});
 
   final Catalogue catalogue;
-  final UserModel currUser;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +15,7 @@ class ScanListItem extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) =>
-                CatalogueDetailScreen(catalogue: catalogue, currUser: currUser),
+            builder: (context) => CatalogueDetailScreen(catalogue: catalogue),
           ),
         );
       },
@@ -40,7 +36,7 @@ class ScanListItem extends StatelessWidget {
                   width: 25,
                   height: 25,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Expanded(
@@ -49,14 +45,14 @@ class ScanListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${catalogue.name}",
+                        catalogue.name,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Expanded(
@@ -65,7 +61,7 @@ class ScanListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "${catalogue.catalogueID}",
+                        catalogue.catalogueID,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),

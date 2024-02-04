@@ -5,9 +5,11 @@ class UserImagePicker extends StatefulWidget {
   const UserImagePicker({
     super.key,
     required this.onPickImage,
+    required this.message,
   });
 
   final void Function(List<XFile> pickedImages) onPickImage;
+  final String message;
 
   @override
   State<UserImagePicker> createState() {
@@ -28,12 +30,6 @@ class _UserImagePickerState extends State<UserImagePicker> {
       _pickedImages = pickedImage;
     });
 
-    final originalImageNames =
-        _pickedImages!.map((image) => image.name).toList();
-
-    // Use the original names as needed, for example:
-    debugPrint(originalImageNames.toString());
-
     widget.onPickImage(_pickedImages!);
   }
 
@@ -47,9 +43,9 @@ class _UserImagePickerState extends State<UserImagePicker> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: const Text(
-        'Upload catalogue',
-        style: TextStyle(
+      child: Text(
+        widget.message,
+        style: const TextStyle(
           color: Colors.black,
         ),
       ),

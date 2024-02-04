@@ -7,7 +7,7 @@ import 'package:clean_catalogue_app/models/catalogue_scores_model.dart';
 
 Future<List<Catalogue>?> getCatalogues({required String userID}) async {
   try {
-    final url = Uri.parse('http://192.168.80.40:3000/catalogue/all/${userID}');
+    final url = Uri.parse('http://localhost:3000/catalogue/all/$userID');
 
     final headers = <String, String>{
       'Content-Type': 'application/json',
@@ -67,6 +67,7 @@ Future<List<Catalogue>?> getCatalogues({required String userID}) async {
     }
   } catch (error) {
     debugPrint(error.toString());
+    debugPrint("Printing 659${error.toString()}");
     throw Error();
   }
 
@@ -80,7 +81,7 @@ Future<UserModel?> createUser(
   UserModel? currUser;
 
   try {
-    final url = Uri.parse('http://192.168.80.40:3000/user/create');
+    final url = Uri.parse('http://localhost:3000/user/create');
 
     final headers = <String, String>{
       'Content-Type': 'application/json',
@@ -135,7 +136,7 @@ Future<UserModel?> createUser(
 
     return currUser;
   } catch (error) {
-    debugPrint("Printing 669${error.toString()}");
+    debugPrint("Printing 679${error.toString()}");
     throw Error();
   }
 }
@@ -147,7 +148,7 @@ Future<CatalogueScores?> scanCatalogue(
     required UserModel currUser}) async {
   CatalogueScores catalogueScores;
   try {
-    final url = Uri.parse('http://192.168.80.40:3000/catalogue/add');
+    final url = Uri.parse('http://localhost:3000/catalogue/add');
 
     final headers = <String, String>{
       'Content-Type': 'application/json',
@@ -173,13 +174,10 @@ Future<CatalogueScores?> scanCatalogue(
       body: body,
     );
 
-    debugPrint("Response: ${response.body}");
-    debugPrint("Response: ${response.reasonPhrase}");
-
     final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
     final catalogueData = responseJson['catalogue'] as Map<String, dynamic>;
 
-    debugPrint("Response: ${responseJson['message']}");
+    debugPrint(catalogueData.toString());
 
     final productDescriptionsScore = catalogueData['ProductDescriptions'];
     final pricingInformationScore = catalogueData['PricingInformation'];

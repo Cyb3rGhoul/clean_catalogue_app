@@ -12,4 +12,26 @@ class UserModel {
     required this.email,
     this.catalogues,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userID': userID,
+      'username': username,
+      'email': email,
+      'catalogues': catalogues?.map((catalogue) => catalogue.toMap()).toList(),
+    };
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      userID: map['userID'] as String,
+      username: map['username'] as String,
+      email: map['email'] as String,
+      catalogues: (map['catalogues'] is List)
+          ? (map['catalogues'] as List)
+              .map((catalogueMap) => Catalogue.fromMap(catalogueMap))
+              .toList()
+          : null,
+    );
+  }
 }

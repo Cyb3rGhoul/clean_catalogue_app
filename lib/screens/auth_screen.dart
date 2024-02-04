@@ -1,21 +1,24 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_catalogue_app/signup_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:clean_catalogue_app/models/user_model.dart';
 import 'package:clean_catalogue_app/screens/scan_screen.dart';
+import 'package:clean_catalogue_app/providers/user_provider.dart';
 import 'package:clean_catalogue_app/services/google_auth_service.dart';
+import 'package:clean_catalogue_app/services/local_storage_service.dart';
 import 'package:clean_catalogue_app/components/google_signin_button.dart';
 
-class AuthScreen extends StatefulWidget {
+class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
 
   @override
-  State<AuthScreen> createState() {
+  ConsumerState<AuthScreen> createState() {
     return _AuthScreenState();
   }
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _AuthScreenState extends ConsumerState<AuthScreen> {
   var _isAuthenticating = false;
 
   void _setIsAuthenticating() {
@@ -37,7 +40,7 @@ class _AuthScreenState extends State<AuthScreen> {
   void _navigateToScanScreen(UserModel user) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => ScanScreen(currUser: user),
+        builder: (context) => const ScanScreen(),
       ),
     );
   }
@@ -48,8 +51,18 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       _setIsAuthenticating();
       currUser = await signInWithGoogle();
+      if (currUser != null) {
+        await saveNewUser(userModel: currUser);
+        ref.read(userProvider.notifier).createUserState(
+              currUser.catalogues,
+              userID: currUser.userID,
+              username: currUser.username,
+              email: currUser.email,
+            );
+      }
     } catch (error) {
-      _showSnackBar(message: "An error occured, please try again later.");
+      _showSnackBar(message: "754An error occured, please try again later.");
+      throw Error();
     } finally {
       _setIsAuthenticating();
       if (currUser != null) _navigateToScanScreen(currUser);
