@@ -81,7 +81,7 @@ Future<UserModel?> createUser(
   UserModel? currUser;
 
   try {
-    final url = Uri.parse('http://localhost:3000/user/create');
+    final url = Uri.parse('http://localhost:3000]/user/create');
 
     final headers = <String, String>{
       'Content-Type': 'application/json',

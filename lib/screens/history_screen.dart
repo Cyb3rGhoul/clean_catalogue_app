@@ -17,9 +17,8 @@ class HistoryScreen extends ConsumerStatefulWidget {
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   void _setScreen(String identifier) {
-    Navigator.of(context).pop();
     if (identifier == 'scan') {
-      Navigator.of(context).push(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (ctx) => const ScanScreen(),
         ),
@@ -73,7 +72,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               Expanded(
                 flex: 1,
                 child: Container(
-                  margin: const EdgeInsets.fromLTRB(34, 25, 34, 0),
+                  margin: const EdgeInsets.fromLTRB(20, 25, 20, 0),
                   decoration: ShapeDecoration(
                     color: const Color(0xFF2F66D0),
                     shape: RoundedRectangleBorder(
@@ -112,7 +111,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         ),
                       ),
                       Card(
-                        margin: const EdgeInsets.fromLTRB(10, 45, 10, 10),
+                        margin: const EdgeInsets.fromLTRB(12, 48, 12, 12),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
                           child: Row(
@@ -145,7 +144,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               Expanded(
                 flex: 3,
                 child: Container(
-                  margin: const EdgeInsets.fromLTRB(28, 20, 28, 15),
+                  margin: const EdgeInsets.fromLTRB(20, 20, 20, 15),
                   decoration: ShapeDecoration(
                     color: const Color(0xFF2F66D0),
                     shape: RoundedRectangleBorder(
@@ -184,7 +183,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         ),
                       ),
                       Card(
-                        margin: const EdgeInsets.fromLTRB(10, 47, 10, 10),
+                        margin: const EdgeInsets.fromLTRB(12, 49, 12, 12),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
                           child: currUser.catalogues != null &&
