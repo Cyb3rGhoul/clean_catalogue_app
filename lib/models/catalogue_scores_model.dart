@@ -22,35 +22,4 @@ class CatalogueScores {
     required this.typosAndGrammar,
     required this.legalCompliance,
   });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'productDescriptions': productDescriptions,
-      'pricingInformation': pricingInformation,
-      'productImages': productImages,
-      'layoutAndDesign': layoutAndDesign,
-      'discountsAndPromotions': discountsAndPromotions,
-      'brandConsistency': brandConsistency,
-      'contactInformationAndCallToAction': contactInformationAndCallToAction,
-      'typosAndGrammar': typosAndGrammar,
-      'legalCompliance': legalCompliance,
-      'areaOfImprovement': areaOfImprovement,
-    };
-  }
-
-  factory CatalogueScores.fromMap(Map<String, dynamic> map) {
-    return CatalogueScores(
-      areaOfImprovement: map['areaOfImprovement'] as String,
-      productDescriptions: map['productDescriptions'] as int,
-      pricingInformation: map['pricingInformation'] as int,
-      productImages: map['productImages'] as int,
-      layoutAndDesign: map['layoutAndDesign'] as int,
-      discountsAndPromotions: map['discountsAndPromotions'] as int,
-      brandConsistency: map['brandConsistency'] as int,
-      contactInformationAndCallToAction:
-          map['contactInformationAndCallToAction'] as int,
-      typosAndGrammar: map['typosAndGrammar'] as int,
-      legalCompliance: map['legalCompliance'] as int,
-    );
-  }
 }

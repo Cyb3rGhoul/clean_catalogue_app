@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:clean_catalogue_app/models/user_model.dart';
 import 'package:clean_catalogue_app/models/catalogue_model.dart';
 import 'package:clean_catalogue_app/models/catalogue_scores_model.dart';
 
 Future<List<Catalogue>?> getCatalogues({required String userID}) async {
+  await dotenv.load(fileName: ".env");
+
   try {
-    final url = Uri.parse('http://localhost:3000/catalogue/all/$userID');
+    final url = Uri.parse(dotenv.env['GET_CATALOGUES_URL']! + userID);
 
     final headers = <String, String>{
       'Content-Type': 'application/json',
@@ -67,7 +70,7 @@ Future<List<Catalogue>?> getCatalogues({required String userID}) async {
     }
   } catch (error) {
     debugPrint(error.toString());
-    debugPrint("Printing 659${error.toString()}");
+    debugPrint("Error fetching catalogues.");
     throw Error();
   }
 
@@ -78,10 +81,11 @@ Future<UserModel?> createUser(
     {required String name,
     required String email,
     required String authID}) async {
+  await dotenv.load(fileName: ".env");
   UserModel? currUser;
 
   try {
-    final url = Uri.parse('http://localhost:3000]/user/create');
+    final url = Uri.parse(dotenv.env['CREATE_USER_URL']!);
 
     final headers = <String, String>{
       'Content-Type': 'application/json',
@@ -136,7 +140,7 @@ Future<UserModel?> createUser(
 
     return currUser;
   } catch (error) {
-    debugPrint("Printing 679${error.toString()}");
+    debugPrint("Error signing in, please try again later.");
     throw Error();
   }
 }
@@ -146,9 +150,10 @@ Future<CatalogueScores?> scanCatalogue(
     required String catalogueName,
     required String? catalogueDescription,
     required UserModel currUser}) async {
+  await dotenv.load(fileName: ".env");
   CatalogueScores catalogueScores;
   try {
-    final url = Uri.parse('http://localhost:3000/catalogue/add');
+    final url = Uri.parse(dotenv.env['SCAN_CATALOGUE_URL']!);
 
     final headers = <String, String>{
       'Content-Type': 'application/json',
@@ -204,7 +209,7 @@ Future<CatalogueScores?> scanCatalogue(
       areaOfImprovement: areaOfImprovement,
     );
   } catch (error) {
-    debugPrint("Printing 699${error.toString()}");
+    debugPrint("Error scanning catalogue.");
     throw Error();
   }
 

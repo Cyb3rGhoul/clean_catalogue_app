@@ -10,10 +10,10 @@ class SignInButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: ontap,
       style: ElevatedButton.styleFrom(
-        elevation: 3,
-        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.grey,
+        elevation: 8,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(10),
         ),
         padding: const EdgeInsets.symmetric(vertical: 15.0),
       ),

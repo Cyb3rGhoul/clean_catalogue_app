@@ -13,7 +13,6 @@ import 'package:clean_catalogue_app/providers/user_provider.dart';
 import 'package:clean_catalogue_app/services/backend_service.dart';
 import 'package:clean_catalogue_app/services/cloudinary_service.dart';
 import 'package:clean_catalogue_app/models/catalogue_scores_model.dart';
-import 'package:clean_catalogue_app/services/local_storage_service.dart';
 import 'package:clean_catalogue_app/components/edit_image_list_item.dart';
 import 'package:clean_catalogue_app/screens/catalogue_detail_screen.dart';
 import 'package:clean_catalogue_app/components/catalogue_image_picker.dart';
@@ -57,21 +56,12 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     });
   }
 
-  void _showSnackBar(
-      {String? actionMessage,
-      Function? actionFunction,
-      required String message}) {
+  void _showSnackBar({required String message}) {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         duration: const Duration(seconds: 2),
-        action: actionMessage != null && actionFunction != null
-            ? SnackBarAction(
-                label: actionMessage,
-                onPressed: () => actionFunction(),
-              )
-            : null,
       ),
     );
   }
@@ -139,7 +129,6 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       );
 
       ref.watch(userProvider.notifier).addStateCatalogue(catalogue);
-      await saveCatalogueToDB(catalogue: catalogue);
 
       _form.currentState!.reset();
       _showSnackBar(message: "Catalogue scanned successfully.");
@@ -195,8 +184,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                                     imageIndex: index + 1,
                                     imageName: uploadedUrls[index].name,
                                     onDeleteImage: () {
-                                      setState(() {
-                                        uploadedUrls.removeAt(index);
+                                      setS(() {
+                                        setState(() {
+                                          uploadedUrls.removeAt(index);
+                                        });
                                       });
                                     });
                               },
@@ -228,41 +219,46 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
             bottom: true,
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(55, 20, 55, 40),
+                padding: const EdgeInsets.fromLTRB(0, 20, 0, 40),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      children: [
-                        CatalogueImagePicker(
-                          onPickImage: _uploadImages,
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        const Text(
-                          "Pick Image",
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Column(
+                        children: [
+                          CatalogueImagePicker(
+                            onPickImage: _uploadImages,
                           ),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          const Text(
+                            "Pick Image",
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    Column(
-                      children: [
-                        CatalogueImageClicker(onPickImage: _uploadImages),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        const Text(
-                          "Take Photo",
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Column(
+                        children: [
+                          CatalogueImageClicker(
+                            onPickImage: _uploadImages,
                           ),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          const Text(
+                            "Take Photo",
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -278,7 +274,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => CatalogueDetailScreen(
-          catalogue: catalogue,
+          curCatalogue: catalogue,
         ),
       ),
     );
@@ -309,6 +305,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     }
   }
 
+  final String logoImage = 'assets/logo_no_background.svg';
+
   @override
   Widget build(BuildContext context) {
     final currUser = ref.watch(userProvider);
@@ -320,7 +318,11 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             centerTitle: true,
-            title: const Text('Scan Catalogue'),
+            title: Image.asset(
+              'assets/logo_no_background.png',
+              width: 110,
+              height: 110,
+            ),
             actions: [
               IconButton(
                 onPressed: _logout,
@@ -430,7 +432,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                                     'Name of the Catalogue',
                                     style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 12,
+                                      fontSize: 15,
                                       fontFamily: 'Kanit',
                                       fontWeight: FontWeight.bold,
                                       height: 0,
@@ -482,7 +484,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                                     'Description',
                                     style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: 12,
+                                      fontSize: 15,
                                       fontFamily: 'Kanit',
                                       fontWeight: FontWeight.bold,
                                       height: 0,

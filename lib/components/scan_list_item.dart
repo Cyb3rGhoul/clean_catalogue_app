@@ -1,6 +1,4 @@
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_catalogue_app/signup_image.dart';
 import 'package:clean_catalogue_app/models/catalogue_model.dart';
 import 'package:clean_catalogue_app/screens/catalogue_detail_screen.dart';
 
@@ -15,7 +13,8 @@ class ScanListItem extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => CatalogueDetailScreen(catalogue: catalogue),
+            builder: (context) =>
+                CatalogueDetailScreen(curCatalogue: catalogue),
           ),
         );
       },
@@ -25,51 +24,34 @@ class ScanListItem extends StatelessWidget {
         ),
         margin: const EdgeInsets.fromLTRB(7, 15, 0, 5),
         elevation: 4,
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
-            child: Row(
-              children: [
-                SvgPicture.string(
-                  svgString,
-                  width: 25,
-                  height: 25,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                foregroundImage: NetworkImage(
+                  catalogue.images[0].imageUrl,
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        catalogue.name,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+              ),
+              const Spacer(flex: 1),
+              Expanded(
+                flex: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      catalogue.name,
+                      style: const TextStyle(
+                        fontSize: 20,
                       ),
-                    ],
-                  ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ],
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Expanded(
-                  flex: 5,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        catalogue.catalogueID,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

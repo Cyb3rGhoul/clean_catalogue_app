@@ -10,8 +10,8 @@ Future<UserModel?> signInWithGoogle() async {
   try {
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
     if (gUser == null) {
-      debugPrint("NOIIIII");
-      return null;
+      debugPrint("User Not Found.");
+      throw Error();
     }
 
     final GoogleSignInAuthentication gAuth = await gUser.authentication;
@@ -34,7 +34,7 @@ Future<UserModel?> signInWithGoogle() async {
   } catch (error) {
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn().signOut();
-    debugPrint("Printing 69${error.toString()}");
+    debugPrint("Error signing in with google, try again later.");
     throw Error();
   }
 }

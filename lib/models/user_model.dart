@@ -13,25 +13,17 @@ class UserModel {
     this.catalogues,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'userID': userID,
-      'username': username,
-      'email': email,
-      'catalogues': catalogues?.map((catalogue) => catalogue.toMap()).toList(),
-    };
-  }
-
-  factory UserModel.fromMap(Map<String, dynamic> map) {
+  UserModel copyWith({
+    String? userID,
+    String? username,
+    String? email,
+    List<Catalogue>? catalogues,
+  }) {
     return UserModel(
-      userID: map['userID'] as String,
-      username: map['username'] as String,
-      email: map['email'] as String,
-      catalogues: (map['catalogues'] is List)
-          ? (map['catalogues'] as List)
-              .map((catalogueMap) => Catalogue.fromMap(catalogueMap))
-              .toList()
-          : null,
+      userID: userID ?? this.userID,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      catalogues: catalogues ?? this.catalogues,
     );
   }
 }

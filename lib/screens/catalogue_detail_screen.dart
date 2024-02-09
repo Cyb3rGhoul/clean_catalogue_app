@@ -5,12 +5,11 @@ import 'package:clean_catalogue_app/providers/user_provider.dart';
 import 'package:clean_catalogue_app/components/radial_gauge.dart';
 import 'package:clean_catalogue_app/services/backend_service.dart';
 import 'package:clean_catalogue_app/models/catalogue_scores_model.dart';
-import 'package:clean_catalogue_app/services/local_storage_service.dart';
 
 class CatalogueDetailScreen extends ConsumerStatefulWidget {
-  final Catalogue catalogue;
+  final Catalogue curCatalogue;
 
-  const CatalogueDetailScreen({super.key, required this.catalogue});
+  const CatalogueDetailScreen({super.key, required this.curCatalogue});
 
   @override
   ConsumerState<CatalogueDetailScreen> createState() =>
@@ -36,16 +35,6 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
     );
   }
 
-  void _reloadDetailPage(Catalogue newCatalogue) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (ctx) => CatalogueDetailScreen(
-          catalogue: newCatalogue,
-        ),
-      ),
-    );
-  }
-
   Future<void> _scanCatalogue() async {
     CatalogueScores? scores;
     final currUser = ref.watch(userProvider);
@@ -53,27 +42,25 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
     try {
       _setIsScanning();
       scores = await scanCatalogue(
-        images: widget.catalogue.images,
-        catalogueName: widget.catalogue.name,
-        catalogueDescription: widget.catalogue.description,
+        images: widget.curCatalogue.images,
+        catalogueName: widget.curCatalogue.name,
+        catalogueDescription: widget.curCatalogue.description,
         currUser: currUser,
       );
 
       final Catalogue catalogue = Catalogue(
-        catalogueID: widget.catalogue.catalogueID,
-        name: widget.catalogue.name,
-        images: widget.catalogue.images,
-        date: widget.catalogue.date,
-        description: widget.catalogue.description,
+        catalogueID: widget.curCatalogue.catalogueID,
+        name: widget.curCatalogue.name,
+        images: widget.curCatalogue.images,
+        date: widget.curCatalogue.date,
+        description: widget.curCatalogue.description,
         result: scores!,
       );
 
       ref.watch(userProvider.notifier).updateStateCatalogue(catalogue);
-      await saveCatalogueToDB(catalogue: catalogue);
 
       _showSnackBar(message: "Catalogue scanned successfully.");
       _setIsScanning();
-      _reloadDetailPage(catalogue);
     } catch (error) {
       _setIsScanning();
       debugPrint(error.toString());
@@ -86,16 +73,22 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double aggregateScore =
-        (0.20) * widget.catalogue.result.productDescriptions +
-            (0.20) * widget.catalogue.result.pricingInformation +
-            (0.15) * widget.catalogue.result.productImages +
-            (0.10) * widget.catalogue.result.layoutAndDesign +
-            (0.10) * widget.catalogue.result.discountsAndPromotions +
-            (0.10) * widget.catalogue.result.brandConsistency +
-            (0.05) * widget.catalogue.result.contactInformationAndCallToAction +
-            (0.05) * widget.catalogue.result.typosAndGrammar +
-            (0.05) * widget.catalogue.result.legalCompliance;
+    Catalogue catalogue = ref
+        .watch(userProvider)
+        .catalogues!
+        .singleWhere((c) => c.catalogueID == widget.curCatalogue.catalogueID);
+
+    double aggregateScore = ((0.20) * catalogue.result.productDescriptions +
+        (0.20) * catalogue.result.pricingInformation +
+        (0.15) * catalogue.result.productImages +
+        (0.10) * catalogue.result.layoutAndDesign +
+        (0.10) * catalogue.result.discountsAndPromotions +
+        (0.10) * catalogue.result.brandConsistency +
+        (0.05) * catalogue.result.contactInformationAndCallToAction +
+        (0.05) * catalogue.result.typosAndGrammar +
+        (0.05) * catalogue.result.legalCompliance);
+
+    aggregateScore = double.parse((aggregateScore.toStringAsFixed(2)));
 
     return Container(
       color: Colors.white,
@@ -103,7 +96,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
         child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text(widget.catalogue.name),
+            title: Text(catalogue.name),
             leading: IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -159,7 +152,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                               ),
                               Expanded(
                                 child: ListView.builder(
-                                  itemCount: widget.catalogue.images.length,
+                                  itemCount: catalogue.images.length,
                                   itemBuilder: (context, index) {
                                     return Column(
                                       children: [
@@ -264,7 +257,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.productDescriptions} %")
+                                            "${catalogue.result.productDescriptions} %")
                                       ],
                                     ),
                                     Row(
@@ -279,7 +272,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.productImages} %")
+                                            "${catalogue.result.productImages} %")
                                       ],
                                     ),
                                     Row(
@@ -294,7 +287,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.layoutAndDesign} %")
+                                            "${catalogue.result.layoutAndDesign} %")
                                       ],
                                     ),
                                     Row(
@@ -309,7 +302,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.pricingInformation} %")
+                                            "${catalogue.result.pricingInformation} %")
                                       ],
                                     ),
                                     Row(
@@ -324,7 +317,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.discountsAndPromotions} %")
+                                            "${catalogue.result.discountsAndPromotions} %")
                                       ],
                                     ),
                                     Row(
@@ -339,7 +332,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.brandConsistency} %")
+                                            "${catalogue.result.brandConsistency} %")
                                       ],
                                     ),
                                     Row(
@@ -353,7 +346,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.contactInformationAndCallToAction} %")
+                                            "${catalogue.result.contactInformationAndCallToAction} %")
                                       ],
                                     ),
                                     Row(
@@ -368,7 +361,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.typosAndGrammar} %")
+                                            "${catalogue.result.typosAndGrammar} %")
                                       ],
                                     ),
                                     Row(
@@ -383,7 +376,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                         ),
                                         const Spacer(),
                                         Text(
-                                            "${widget.catalogue.result.legalCompliance} %")
+                                            "${catalogue.result.legalCompliance} %")
                                       ],
                                     ),
                                   ],
@@ -426,7 +419,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(15.0),
                                     child: Text(
-                                      widget.catalogue.result.areaOfImprovement,
+                                      catalogue.result.areaOfImprovement,
                                     ),
                                   ),
                                 ),
@@ -448,7 +441,7 @@ class _CatalogueDetailScreenState extends ConsumerState<CatalogueDetailScreen> {
                     ),
                   ),
                   child: Text(
-                    !_isScanning ? "Scan Again" : "Scanning",
+                    !_isScanning ? "Scan Again" : "Scanning...",
                     style: const TextStyle(
                       fontSize: 15,
                       color: Colors.white,

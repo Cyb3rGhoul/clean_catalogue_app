@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:clean_catalogue_app/screens/scan_screen.dart';
+import 'package:clean_catalogue_app/models/catalogue_model.dart';
 import 'package:clean_catalogue_app/components/main_drawer.dart';
 import 'package:clean_catalogue_app/screens/landing_screen.dart';
 import 'package:clean_catalogue_app/providers/user_provider.dart';
+import 'package:clean_catalogue_app/services/backend_service.dart';
 import 'package:clean_catalogue_app/components/scan_list_item.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
@@ -16,6 +18,39 @@ class HistoryScreen extends ConsumerStatefulWidget {
 }
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+  List<Catalogue>? _catalogueList;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _getCatalogues();
+  }
+
+  void _getCatalogues() async {
+    final currUser = ref.watch(userProvider);
+
+    _catalogueList = await getCatalogues(userID: currUser.userID);
+
+    if (_catalogueList != null) {
+      ref.read(userProvider.notifier).changeUserState(
+            _catalogueList!,
+            userID: currUser.userID,
+            username: currUser.username,
+            email: currUser.email,
+          );
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   void _setScreen(String identifier) {
     if (identifier == 'scan') {
       Navigator.of(context).pushReplacement(
@@ -45,13 +80,73 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget build(BuildContext context) {
     final currUser = ref.watch(userProvider);
 
+    _catalogueList = currUser.catalogues;
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'Catalogue History',
+          ),
+          actions: [
+            IconButton(
+              onPressed: _logout,
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+        drawer: MainDrawer(
+          currUser: currUser,
+          onSelectScreen: _setScreen,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF2F66D0),
+          ),
+        ),
+      );
+    }
+
+    if (_catalogueList == null) {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'Catalogue History',
+          ),
+          actions: [
+            IconButton(
+              onPressed: _logout,
+              icon: const Icon(
+                Icons.logout,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+        drawer: MainDrawer(
+          currUser: currUser,
+          onSelectScreen: _setScreen,
+        ),
+        body: const Center(
+          child: Text("Error fetching catalogue, please try again later."),
+        ),
+      );
+    }
+
     return Container(
       color: Colors.white,
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: const Text('Catalogue History'),
+            title: const Text(
+              'Catalogue History',
+            ),
             actions: [
               IconButton(
                 onPressed: _logout,
@@ -121,17 +216,46 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Name"),
-                                  Text("Email Id:"),
+                                  Text(
+                                    "Name:",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Email Id:",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
                                 ],
                               ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(currUser.username),
-                                  Text(currUser.email),
-                                ],
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      currUser.username,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                    Text(
+                                      currUser.email,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
                               )
                             ],
                           ),

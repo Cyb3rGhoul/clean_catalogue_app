@@ -32,7 +32,7 @@ Future<void> uploadToCloudinary(
     }
   } catch (error) {
     debugPrint(error.toString());
-    debugPrint("error occured.");
-    return;
+    debugPrint("Error uploading images.");
+    throw Error();
   }
 }

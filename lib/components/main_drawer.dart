@@ -15,21 +15,36 @@ class MainDrawer extends StatelessWidget {
       child: Column(
         children: [
           DrawerHeader(
-            padding: const EdgeInsets.all(20),
             decoration: const BoxDecoration(
               color: Color(0xFF2F66D0),
             ),
-            child: Row(
-              children: [
-                Text(
-                  'Welcome, ${currUser.username}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
+            padding: const EdgeInsets.fromLTRB(26, 15, 0, 15),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Text(
+                        'Welcome,',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                        ),
+                      ),
+                      Text(
+                        currUser.username,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 30,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           ListTile(

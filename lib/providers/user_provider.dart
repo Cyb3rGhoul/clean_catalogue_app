@@ -13,7 +13,7 @@ class UserModelNotifier extends StateNotifier<UserModel> {
           ),
         );
 
-  void createUserState(
+  void changeUserState(
     List<Catalogue>? catalogues, {
     required String userID,
     required String username,
@@ -38,14 +38,17 @@ class UserModelNotifier extends StateNotifier<UserModel> {
   void updateStateCatalogue(Catalogue catalogue) {
     if (state.catalogues == null) return;
 
-    final catalogueIndex = state.catalogues!
+    final updatedCatalogues = List<Catalogue>.from(state.catalogues!);
+    final catalogueIndex = updatedCatalogues
         .indexWhere((c) => c.catalogueID == catalogue.catalogueID);
 
     if (catalogueIndex != -1) {
-      state.catalogues![catalogueIndex] = catalogue;
+      updatedCatalogues[catalogueIndex] = catalogue;
     } else {
-      state.catalogues!.add(catalogue);
+      updatedCatalogues.add(catalogue);
     }
+
+    state = state.copyWith(catalogues: updatedCatalogues);
   }
 }
 

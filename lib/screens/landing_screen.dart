@@ -1,7 +1,6 @@
 import 'auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:clean_catalogue_app/signup_image.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -21,6 +20,8 @@ class _LandingScreenState extends State<LandingScreen> {
     );
   }
 
+  final String landingImageSvg = 'assets/landing_image.svg';
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,13 +32,9 @@ class _LandingScreenState extends State<LandingScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 350),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SvgPicture.string(
-                    svgString,
-                  ),
-                  const SizedBox(
-                    height: 100,
+                  SvgPicture.asset(
+                    landingImageSvg,
                   ),
                   const Text(
                     'Welcome to Clean Catalogue',
@@ -65,7 +62,7 @@ class _LandingScreenState extends State<LandingScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 130,
+                    height: 110,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
